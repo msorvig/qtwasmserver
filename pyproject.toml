@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qtwasmserver"
+version = "0.0.1"
+authors = [
+  { name="Morten Sørvig", email="msorvig@gmail.com" },
+]
+description = "Development Web Server for Qt for Webassembly"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "brotli >= 1",
+  "netifaces >= 0.11",
+  "httpcompressionserver >= 0.5",
+]
+
+[tool.hatch.build.targets.wheel]
+only-include = ["src"]
+sources = ["src"]
+
+[project.scripts]
+qtwasmserver = "qtwasmserver.qtwasmserver:main"
+
+[project.urls]
+"Homepage" = "https://github.com/msorvig/qtwasmserver"
+"Bug Tracker" = "https://github.com/msorvig/qtwasmserver/issues"
