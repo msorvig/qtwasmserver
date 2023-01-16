@@ -45,12 +45,12 @@ TODO:
 
 pip install qtwasmserver
 
-qtwasmserver                        # Start server on localhost, serve $CWD
-qtwasmserver /path/to/wasm/builds   # Specify web root path
-qtwasmserver --all-interfaces       # Start server(s) on all network interfaces
-qtwasmserver -a 10.0.0.2            # Start server on specific address, in addition to localhost
-qtwasmserver --site-isolation       # Enable site isolation mode for multithreading
-qtwasmserver -h                     # Show help
+    qtwasmserver                        # Start server on localhost, serve $CWD
+    qtwasmserver /path/to/wasm/builds   # Specify web root path
+    qtwasmserver --all-interfaces       # Start server(s) on all network interfaces
+    qtwasmserver -a 10.0.0.2            # Start server on specific address, in addition to localhost
+    qtwasmserver --site-isolation       # Enable site isolation mode for multithreading
+    qtwasmserver -h                     # Show help
 
 # Using mkcert
 
