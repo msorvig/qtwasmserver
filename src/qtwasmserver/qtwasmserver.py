@@ -40,9 +40,10 @@ def generate_mkcert_certificate(addresses):
         )
         print(f"   {root_ca_path}\n")
     except Exception as e:
-        print("Warning: Unable to run mkcert. Will not start HTTPS server")
+        print("Warning: Unable to run mkcert. Will not start https server.")
         print(e)
-        return False
+        print(f"Install mkcert from github.com/FiloSottile/mkcert to fix this.\n")
+        return False, None, None
 
     # generate certificates
     addresses_string = f"localhost {' '.join(addresses)}"
@@ -70,7 +71,6 @@ def send_empty_favicon(handle):
     self.send_response(200)
     self.send_header("Content-Type", "image/x-icon")
     self.send_header("Content-Length", 0)
-
 
 class HttpRequestHandler(SimpleHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
@@ -226,7 +226,7 @@ def main():
     elif args.compress_never:
         compression_mode = CompressionMode.NEVER
 
-    print("Starting Qt for WebAssembly development server.\n")
+    print("Qt for WebAssembly development server.\n")
     print(f"Web server root:\n  {serve_path}\n")
 
     addresses = ["127.0.0.1"] + cmd_addresses
