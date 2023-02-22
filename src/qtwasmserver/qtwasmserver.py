@@ -38,19 +38,22 @@ def generate_mkcert_certificate(addresses):
         print(
             "Generating certificates with mkcert, using certificate authority files at:"
         )
-        print(f"   {root_ca_path}\n")
+        print(f"   {root_ca_path}")
+        print("(Found by running 'mkcert -CAROOT')\n")
     except Exception as e:
         print("Warning: Unable to run mkcert. Will not start https server.")
         print(e)
         print(f"Install mkcert from github.com/FiloSottile/mkcert to fix this.\n")
         return False, None, None
 
-    # generate certificates
+    # generate certificates using mkcert
     addresses_string = f"localhost {' '.join(addresses)}"
+    print("=== begin mkcert output ===\n")
     ret = run(
         f"mkcert -cert-file {cert_file.name} -key-file {cert_key_file.name} {addresses_string}",
         shell=True,
     )
+    print("=== end mkcert output ===\n")
     has_certificate = ret.returncode == 0
     if not has_certificate:
         print(
@@ -59,8 +62,8 @@ def generate_mkcert_certificate(addresses):
     return has_certificate, cert_file, cert_key_file
 
 
-def send_site_isolation_headers(handler):
-    """Sends COOP and COEP site isolation headers"""
+def send_cross_origin_isolation_headers(handler):
+    """Sends COOP and COEP cross origin isolation headers"""
     handler.send_header("Cross-Origin-Opener-Policy", "same-origin")
     handler.send_header("Cross-Origin-Embedder-Policy", "require-corp")
     handler.send_header("Cross-Origin-Resource-Policy", "cross-origin")
@@ -76,8 +79,8 @@ class HttpRequestHandler(SimpleHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
     def end_headers(self):
-        if self.site_isolation == True:
-            send_site_isolation_headers(self)
+        if self.cross_origin_isolation == True:
+            send_cross_origin_isolation_headers(self)
         super().end_headers()
 
 
@@ -116,8 +119,8 @@ class CompressionHttpRequesthandler(HTTPCompressionRequestHandler):
     compressions["br"] = brotli_producer
 
     def end_headers(self):
-        if self.site_isolation == True:
-            send_site_isolation_headers(self)
+        if self.cross_origin_isolation == True:
+            send_cross_origin_isolation_headers(self)
         super().end_headers()
 
 
@@ -128,6 +131,7 @@ class CompressionMode(Enum):
 
 
 def select_http_handler_class(compression_mode, address):
+
     """Returns the http handler class to use, based on the compression mode,
     and the address of the server for the auto mode."""
     if compression_mode == CompressionMode.ALWAYS:
@@ -138,7 +142,7 @@ def select_http_handler_class(compression_mode, address):
         # Select http request handler based on addrees. If the address is
         # localhost then compression is typically not worth it since the
         # localhost connection is very fast. For other addresses we assume
-        # normal network bandwidth and enable compression to reduce the download
+        # typical network bandwidth and enable compression to reduce the download
         # size.
         if address == "127.0.0.1":
             return HttpRequestHandler
@@ -148,10 +152,10 @@ def select_http_handler_class(compression_mode, address):
 
 # Serve cwd from http(s)://address:port, with certificates from certdir if set
 def serve_on_thread(
-    address, port, secure, cert_file, cert_key_file, compression_mode, site_isolation
+    address, port, secure, cert_file, cert_key_file, compression_mode, cross_origin_isolation
 ):
     handler = select_http_handler_class(compression_mode, address)
-    handler.site_isolation = site_isolation
+    handler.cross_origin_isolation = cross_origin_isolation
     httpd = ThreadingHTTPServer((address, port), handler)
     if secure:
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -184,11 +188,13 @@ def main():
     )
     parser.add_argument(
         "--all-interfaces",
+        "-A",
         help="Bind to all local interfaces, instead of locahost only",
         action="store_true",
     )
     parser.add_argument(
-        "--site-isolation",
+        "--cross-origin-isolation",
+        "-i",
         help="Enables site isolation mode, required for WebAssembly threads",
         action="store_true",
     )
@@ -218,7 +224,7 @@ def main():
     all_interfaces = args.all_interfaces
     cmd_addresses = args.address or []
     serve_path = args.path
-    site_isolation = args.site_isolation
+    cross_origin_isolation = args.cross_origin_isolation
 
     compression_mode = CompressionMode.AUTO
     if args.compress_always:
@@ -246,7 +252,7 @@ def main():
 
     print("Options:")
     print(f"   Secure server:          {has_certificate}")
-    print(f"   Site isolation mode:    {site_isolation}")
+    print(f"   Cross Origin Isolation: {cross_origin_isolation}")
     print(f"   Compression:            {compression_mode}")
     print("")
 
@@ -261,7 +267,7 @@ def main():
             cert_file,
             cert_key_file,
             compression_mode,
-            site_isolation,
+            cross_origin_isolation,
         )
 
     if has_certificate:
@@ -274,7 +280,7 @@ def main():
                 cert_file,
                 cert_key_file,
                 compression_mode,
-                site_isolation,
+                cross_origin_isolation,
             )
 
 
