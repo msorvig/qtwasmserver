@@ -40,7 +40,7 @@ Usage exmaples:
 
     qtwasmserver                            # Start server on localhost, serve $CWD
     qtwasmserver /path/to/wasm/builds       # Specify web root path
-    qtwasmserver -p 1080                    # Start server(s) on a spesific port
+    qtwasmserver -p 1080                    # Start server(s) on custom port
     qtwasmserver --all-interfaces           # Start server(s) on all network interfaces
     qtwasmserver -a 10.0.0.2                # Start server on specific address, in addition to localhost
     qtwasmserver --cross-origin-isolation   # Enable cross-origin isolation mode for multithreading
