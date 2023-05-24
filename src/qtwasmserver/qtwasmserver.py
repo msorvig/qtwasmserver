@@ -202,7 +202,7 @@ def main():
     parser.add_argument(
         "--cross-origin-isolation",
         "-i",
-        help="Enables site isolation mode, required for WebAssembly threads",
+        help="Enables cross-origin isolation mode, required for WebAssembly threads",
         action="store_true",
     )
     parser.add_argument(

@@ -21,21 +21,12 @@ following features:
 
 * Support for compression using brotli. By default, the server compresses when serving over a
   public, non-localhost address. (localhost is fast, enabling compression here usualually increases
-  download time instead of the opposite). Compression be controlled with the --compress-always and 
+  download time instead of doing the opposite). Compression be controlled with the --compress-always and
   --compress-never options.
 
-* Support for enabling site isolation mode. This sets the so-called COOP and COEP headers,
-  which are required to enable SharedArrayBuffer and multithreading. Enable with the --site-isolation option.
-  While there is little reason to not enable SharedArrayBuffer, site isolation mode also enables
-  additional restrictions for cross origin requests, which may come as a surprise.
-
-It also has a couple of non-features:
-
-* Support for starting/stopping web browsers.
-
-* Support for forwarding standard output to the console.
-
-If you are looking to use features like the above, then emrun from Emscripten is a better choice.
+* Support for enabling cross-origin isolation mode. This sets the so-called COOP and COEP headers,
+  which are required to enable SharedArrayBuffer and multithreading. Enable with the --cross-origin-isolation
+  option. Note that this may impose additional restrictions on cross-origin requests.
 
 TODO:
 
@@ -45,12 +36,15 @@ TODO:
 
 pip install qtwasmserver
 
-    qtwasmserver                        # Start server on localhost, serve $CWD
-    qtwasmserver /path/to/wasm/builds   # Specify web root path
-    qtwasmserver --all-interfaces       # Start server(s) on all network interfaces
-    qtwasmserver -a 10.0.0.2            # Start server on specific address, in addition to localhost
-    qtwasmserver --site-isolation       # Enable site isolation mode for multithreading
-    qtwasmserver -h                     # Show help
+Usage exmaples:
+
+    qtwasmserver                            # Start server on localhost, serve $CWD
+    qtwasmserver /path/to/wasm/builds       # Specify web root path
+    qtwasmserver -p 1080                    # Start server(s) on a spesific port
+    qtwasmserver --all-interfaces           # Start server(s) on all network interfaces
+    qtwasmserver -a 10.0.0.2                # Start server on specific address, in addition to localhost
+    qtwasmserver --cross-origin-isolation   # Enable cross-origin isolation mode for multithreading
+    qtwasmserver -h                         # Show help
 
 # Using mkcert
 
@@ -64,6 +58,6 @@ The basic flow is:
  2. Generate a certificate for each address you want to use. This is done automatically
     by this server.
 
-The main beneifits of this appraoch is that certificates can be freely generated if/when
-the network address for the server changes, for example when moving between home and office
-networks, and that it does not requie reqeusting certificates from a third party.
+The main beneifit of this appraoch is that certificates can be generated locally on demand,
+which can be useful when for instance when moving a development machine between home and office
+networks.
