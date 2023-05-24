@@ -17,6 +17,7 @@ import brotli
 import netifaces as ni
 from httpcompressionserver import HTTPCompressionRequestHandler
 
+
 def generate_mkcert_certificate(addresses):
     """ "Generates a https certificate for localhost and selected addresses. This
     requires that the mkcert utility is installed, and that a certificate
@@ -38,8 +39,7 @@ def generate_mkcert_certificate(addresses):
         print(
             "Generating certificates with mkcert, using certificate authority files at:"
         )
-        print(f"   {root_ca_path}")
-        print("(Found by running 'mkcert -CAROOT')\n")
+        print(f"   {root_ca_path}       [from 'mkcert -CAROOT'] \n")
     except Exception as e:
         print("Warning: Unable to run mkcert. Will not start https server.")
         print(e)
@@ -74,6 +74,7 @@ def send_empty_favicon(handle):
     self.send_response(200)
     self.send_header("Content-Type", "image/x-icon")
     self.send_header("Content-Length", 0)
+
 
 class HttpRequestHandler(SimpleHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
@@ -125,9 +126,9 @@ class CompressionHttpRequesthandler(HTTPCompressionRequestHandler):
 
 
 class CompressionMode(Enum):
-    AUTO = 1
-    ALWAYS = 2
-    NEVER = 3
+    AUTO = "Auto"
+    ALWAYS = "Always"
+    NEVER = "Never"
 
 
 def select_http_handler_class(compression_mode, address):
@@ -152,7 +153,13 @@ def select_http_handler_class(compression_mode, address):
 
 # Serve cwd from http(s)://address:port, with certificates from certdir if set
 def serve_on_thread(
-    address, port, secure, cert_file, cert_key_file, compression_mode, cross_origin_isolation
+    address,
+    port,
+    secure,
+    cert_file,
+    cert_key_file,
+    compression_mode,
+    cross_origin_isolation,
 ):
     handler = select_http_handler_class(compression_mode, address)
     handler.cross_origin_isolation = cross_origin_isolation
@@ -253,7 +260,7 @@ def main():
     print("Options:")
     print(f"   Secure server:          {has_certificate}")
     print(f"   Cross Origin Isolation: {cross_origin_isolation}")
-    print(f"   Compression:            {compression_mode}")
+    print(f"   Compression:            {compression_mode.value}")
     print("")
 
     # Start servers

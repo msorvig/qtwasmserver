@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qtwasmserver"
-version = "0.0.6"
+version = "0.1.0"
 authors = [
   { name="Morten Sørvig", email="msorvig@gmail.com" },
 ]
@@ -17,7 +17,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "brotli >= 1",
+  "brotlipy >= 0.7",
   "netifaces >= 0.10",
   "httpcompressionserver >= 0.5",
 ]
