@@ -163,7 +163,13 @@ def serve_on_thread(
 ):
     handler = select_http_handler_class(compression_mode, address)
     handler.cross_origin_isolation = cross_origin_isolation
-    httpd = ThreadingHTTPServer((address, port), handler)
+
+    try:
+        httpd = ThreadingHTTPServer((address, port), handler)
+    except Exception as e:
+        print(f"\n### Error starting HTTP server: {e}\n")
+        exit(1)
+
     if secure:
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         context.load_cert_chain(cert_file.name, cert_key_file.name)
