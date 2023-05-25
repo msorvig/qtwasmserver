@@ -1,8 +1,8 @@
 ## Qt for WebAssembly development server. 
 
 This server is intented to be used while developing and testing WebAssembly applications on a
-trusted network. It is not suitable for production use, i.e. distributing applicaitons to end
-users over public networks.
+trusted network. It is not suitable for production use cases like distributing applicaitons
+to end users over public networks.
 
 The server is an upgrade from the python one line server ("python -m http.server"), and offers the
 following features:
@@ -58,6 +58,6 @@ The basic flow is:
  2. Generate a certificate for each address you want to use. This is done automatically
     by this server.
 
-The main beneifit of this appraoch is that certificates can be generated locally on demand,
-which can be useful when for instance when moving a development machine between home and office
-networks.
+The beneifit of this appraoch is that certificates can be generated locally, on demand,
+for each server address in use. This can be useful when for instance moving a development
+machine between home and office networks.
