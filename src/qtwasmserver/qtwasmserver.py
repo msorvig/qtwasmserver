@@ -88,9 +88,10 @@ class HttpRequestHandler(SimpleHTTPRequestHandler):
 class CompressionHttpRequesthandler(HTTPCompressionRequestHandler):
     protocol_version = "HTTP/1.1"
 
-    # Add wasm to the list of compressed types.
+    # Make sure we compress: Add wasm and octet-stream to compressed_types
     compressed_types = HTTPCompressionRequestHandler.compressed_types.copy()
     compressed_types.append("application/wasm")
+    compressed_types.append("application/octet-stream")
 
     def brotli_producer(fileobj):
         bufsize = 1024 * 512
