@@ -12,6 +12,7 @@ from enum import Enum
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from subprocess import run
+from functools import partial
 
 import brotli
 import netifaces as ni
@@ -152,7 +153,7 @@ def select_http_handler_class(compression_mode, address):
             return CompressionHttpRequesthandler
 
 
-# Serve cwd from http(s)://address:port, with certificates from certdir if set
+# Serve serve_path from http(s)://address:port, with certificates from certdir if set
 def serve_on_thread(
     address,
     port,
@@ -161,12 +162,13 @@ def serve_on_thread(
     cert_key_file,
     compression_mode,
     cross_origin_isolation,
+    serve_path,
 ):
     handler = select_http_handler_class(compression_mode, address)
     handler.cross_origin_isolation = cross_origin_isolation
 
     try:
-        httpd = ThreadingHTTPServer((address, port), handler)
+        httpd = ThreadingHTTPServer((address, port), partial(handler, directory=serve_path))
     except Exception as e:
         print(f"\n### Error starting HTTP server: {e}\n")
         exit(1)
@@ -240,6 +242,10 @@ def main():
     serve_path = args.path
     cross_origin_isolation = args.cross_origin_isolation
 
+    if not os.path.isdir(serve_path):
+        print(f"The provided path '{serve_path}' does not exist or is not a directory")
+        exit(1)
+
     compression_mode = CompressionMode.AUTO
     if args.compress_always:
         compression_mode = CompressionMode.ALWAYS
@@ -282,6 +288,7 @@ def main():
             cert_key_file,
             compression_mode,
             cross_origin_isolation,
+            serve_path,
         )
 
     if has_certificate:
@@ -295,6 +302,7 @@ def main():
                 cert_key_file,
                 compression_mode,
                 cross_origin_isolation,
+                serve_path,
             )
 
 
